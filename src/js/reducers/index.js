@@ -1,16 +1,54 @@
-import { ADD_ARTICLE } from "../constants/action-types";
+import {
+  ADD_TODO,
+  TOGGLE_TODO,
+  SET_VISIBILITY_FILTER,
+  VisibilityFilters,
+} from "../constants/action-types";
+import { combineReducers } from "redux";
 
-const initialState = {
-  articles: [],
+const { SHOW_ALL } = VisibilityFilters;
+
+/*const initialState = {
+  visibilityFilter: VisibilityFilters.SHOW_ALL,
+  todos: [],
 };
-
-function rootReducer(state = initialState, action) {
-  if (action.type === ADD_ARTICLE) {
-    return Object.assign({}, state, {
-      articles: state.articles.concat(action.payload),
-    });
+*/
+function todos(state = [], action) {
+  switch (action.type) {
+    case ADD_TODO:
+      return [
+        ...state,
+        {
+          text: action.text,
+          completed: false,
+        },
+      ];
+    case TOGGLE_TODO:
+      return state.map((todo, index) => {
+        if (index === action.index) {
+          return Object.assign({}, todo, {
+            completed: !todo.completed,
+          });
+        }
+        return todo;
+      });
+    default:
+      return state;
   }
-  return state;
 }
 
-export default rootReducer;
+function visibilityFilter(state = SHOW_ALL, action) {
+  switch (action.type) {
+    case SET_VISIBILITY_FILTER:
+      return action.filter;
+    default:
+      return state;
+  }
+}
+
+const todoApp = combineReducers({
+  visibilityFilter,
+  todos,
+});
+
+export default todoApp;
